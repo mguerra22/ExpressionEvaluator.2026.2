@@ -10,11 +10,18 @@ public static class ExpressionEvaluator
     private static string ToPostfix(string infix)
     {
         var posfix = string.Empty;
+        var number = string.Empty;
         var stack = new Stack<char>();
         foreach (var item in infix)
         {
             if (IsOperator(item))
             {
+                if (number != string.Empty)
+                {
+                    posfix += number + " ";
+                    number = string.Empty;
+                }
+
                 if (item == ')')
                 {
                     var ope = stack.Pop();
@@ -46,8 +53,13 @@ public static class ExpressionEvaluator
             }
             else
             {
-                posfix += item;
+                number += item;
             }
+        }
+
+        if (number != string.Empty)
+        {
+            posfix += number + " ";
         }
         do
         {
