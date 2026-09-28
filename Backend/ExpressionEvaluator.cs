@@ -1,5 +1,6 @@
 ﻿using System.Diagnostics.CodeAnalysis;
 using System.Reflection.Metadata;
+using System.Globalization;
 
 namespace Backend;
 
@@ -27,7 +28,7 @@ public static class ExpressionEvaluator
                     var ope = stack.Pop();
                     while(ope != '(')
                     {
-                        posfix += ope;
+                        posfix += ope + " ";
                         ope = stack.Pop();
                     }
                 }
@@ -45,7 +46,7 @@ public static class ExpressionEvaluator
                         }
                         else
                         {
-                            posfix += stack.Pop();
+                            posfix += stack.Pop() + " ";
                             stack.Push(item);
                         }
                     }
@@ -63,7 +64,7 @@ public static class ExpressionEvaluator
         }
         do
         {
-            posfix += stack.Pop();
+            posfix += stack.Pop() + " ";
         } while (stack.Count != 0);
         return posfix;
     }
@@ -95,17 +96,17 @@ public static class ExpressionEvaluator
     private static double EvalutePostfix(string postfix)
     {
         var stack = new Stack<double>();
-        foreach (var item in postfix)
+        foreach(var item in postfix.Split(' ', StringSplitOptions.RemoveEmptyEntries))
         {
-            if (IsOperator(item))
+            if (item.Length == 1 && IsOperator(item[0]))
             {
                 var ope2 = stack.Pop();
                 var ope1 = stack.Pop();
-                stack.Push(Calculate(ope1, ope2, item));
+                stack.Push(Calculate(ope1, ope2, item[0]));
             }
             else
             {
-                stack.Push(char.GetNumericValue(item));
+                stack.Push(double.Parse(item, CultureInfo.InvariantCulture));
             }
         }
         return stack.Pop();
